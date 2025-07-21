@@ -1,0 +1,12 @@
+<service>
+  <id>jenkins-agent</id>
+  <name>Jenkins Agent</name>
+  <description>Jenkins Deploy Agent</description>
+  <executable>java</executable>
+  <arguments>-jar agent.jar -url https://domain.com/ -secret YOUR-SECRET-KEY -name "agent-132" -workDir "D:\Jenkins"</arguments>
+  <workingdirectory>D:\Jenkins\</workingdirectory>
+  <logmode>rotate</logmode>
+  <onfailure action="restart" delay="10 sec"/>
+  <startmode>Automatic</startmode>
+  <interactive>false</interactive>
+</service>
