@@ -1,6 +1,6 @@
 # การติดตั้ง Jenkins Agent 
 
-## เริ่มต้นใช้งานอย่างรวดเร็ว
+## เริ่มต้นใช้งาน
 
 ```bash
 # 1. สร้าง Directory สำหรับ Jenkins
@@ -31,7 +31,7 @@ java -version
 # ควรได้: java version "21.0.7" 2025-04-15 LTS
 ```
 
-![Java Installation](https://github.com/Pratchaya0/jenkin-setup/utilities/java-installation-verification.png)
+![Java Installation](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/java-installation-verification.png)
 
 ### ขั้นตอนที่ 2: ตั้งค่า Jenkins Master
 
@@ -40,9 +40,9 @@ java -version
 3. ตั้งค่า Agent ตามต้องการ
 4. บันทึกคำสั่งการเชื่อมต่อที่ได้
 
-![Jenkins Master Configuration I](https://github.com/Pratchaya0/jenkin-setup/utilities/java-master-configuration-i.png)
-![Jenkins Master Configuration II](https://github.com/Pratchaya0/jenkin-setup/utilities/java-master-configuration-ii.png)
-![Jenkins Master Configuration Result](https://github.com/Pratchaya0/jenkin-setup/utilities/java-master-configuration-result.png)
+![Jenkins Master Configuration I](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/java-master-configuration-i.png)
+![Jenkins Master Configuration II](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/java-master-configuration-ii.png)
+![Jenkins Master Configuration Result](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/java-master-configuration-result.png)
 
 ### ขั้นตอนที่ 3: เตรียม Agent Machine
 
