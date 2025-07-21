@@ -14,8 +14,8 @@
 
 4. จากนั้นสร้าง **Job** แบบ **Pipeline** ใน **Folder** โดยอิงโครงสร้าง **Pipeline** จากตัวอย่าง
 
-- [`React Pipeline`](https://github.com/Pratchaya0/jenkin-setup/pipeline/react-pipeline.groovy) (ต้องมีการ config เพิ่มเติม)
-- [`.NET Pipeline`](https://github.com/Pratchaya0/jenkin-setup/pipeline/dotnet-pipeline.groovy) (ต้องมีการ config เพิ่มเติม)
+- [`React Pipeline`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/pipeline/react-pipeline.groovy) (ต้องมีการ config เพิ่มเติม)
+- [`.NET Pipeline`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/pipeline/dotnet-pipeline.groovy) (ต้องมีการ config เพิ่มเติม)
 
 ![Job Pipeline Create I](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/job-pipeline-create-i.png)
 ![Job Pipeline Create II](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/utilities/job-pipeline-create-ii.png)

@@ -59,11 +59,11 @@ curl.exe -sO https://domain.com/jnlpJars/agent.jar
 
 ดาวน์โหลดไฟล์เหล่านี้ไปยัง `D:\Jenkins\`:
 
-- [`jenkins-agent.exe`](https://github.com/Pratchaya0/jenkin-setup/jenkins-agent.exe) (Windows Service Wrapper)
-- [`jenkins-agent.xml`](https://github.com/Pratchaya0/jenkin-setup/jenkins-agent.xml) (การตั้งค่า Service)
-- [`jenkins-startup.bat`](https://github.com/Pratchaya0/jenkin-setup/jenkins-startup.bat) (Startup Script)
+- [`jenkins-agent.exe`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/jenkins-agent.exe) (Windows Service Wrapper)
+- [`jenkins-agent.xml`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/jenkins-agent.xml) (การตั้งค่า Service)
+- [`jenkins-startup.bat`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/jenkins-startup.bat) (Startup Script)
 
-![zip 3 ไฟล์](https://github.com/Pratchaya0/jenkin-setup/starter-kit.zip)
+[`zip 3 ไฟล์`](https://github.com/Pratchaya0/jenkin-setup/blob/win-server/starter-kit.zip)
 
 ### ขั้นตอนที่ 5: โครงสร้าง Directory
 
