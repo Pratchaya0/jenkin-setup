@@ -1,9 +1,26 @@
 <service>
   <id>jenkins-agent</id>
   <name>Jenkins Agent</name>
-  <description>Jenkins Deploy Agent</description>
+  <description>Jenkins Build Agent</description>
   <executable>java</executable>
-  <arguments>-jar agent.jar -url https://domain.com/ -secret YOUR-SECRET-KEY -name "agent-132" -workDir "D:\Jenkins"</arguments>
+   <arguments>
+    -Xms128m 
+    -Xmx1024m 
+    -XX:+UseG1GC 
+    -XX:MaxGCPauseMillis=200 
+    -XX:+UseCompressedOops 
+    -XX:+UseCompressedClassPointers 
+    -XX:MaxMetaspaceSize=128m 
+    -Djava.awt.headless=true 
+    -Dfile.encoding=UTF-8 
+    -Dhudson.remoting.Launcher.pingIntervalSec=300 
+    -Dhudson.slaves.ChannelPinger.pingTimeoutSec=240 
+    -jar agent.jar 
+    -url https://domain.com/ ------------------*** INSERT YOUR DOMAIN
+    -secret YOUR-SECRET-KEY -------------------*** INSERT YOUR KEY  
+    -name YOUR-AGENT-NAME  --------------------*** INSERT YOUR AGENT NAME 
+    -workDir "D:\Jenkins"
+  </arguments>
   <workingdirectory>D:\Jenkins\</workingdirectory>
   <logmode>rotate</logmode>
   <onfailure action="restart" delay="10 sec"/>
