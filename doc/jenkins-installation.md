@@ -1,5 +1,5 @@
 # Jenkins Installation
-Updated 2025-12-07 [@octokatherine](https://www.github.com/Pratchaya0)
+Updated 2025-12-07 [@Pratchaya0](https://www.github.com/Pratchaya0)
 
 # Server setting
 ### Download
@@ -16,6 +16,12 @@ Java 21 (Oracle):
 
 ### GitHub publishes their IPs
 - https://api.github.com/meta
+
+### Fix JAVA runtime access resources
+
+# Github setting
+- Doc: https://demopos.devsiamsmile.com/devops/new-agent
+- Doc (public): https://github.com/Pratchaya0/jenkin-setup/blob/win-server/doc/github-app-authentication.md
 
 # Jenkins *Master* setting
 ### Plugin
@@ -41,7 +47,8 @@ Java 21 (Oracle):
 - **Check UAT**
 
 # Jenkins *Slave* setting
-- https://demopos.devsiamsmile.com/devops/new-agent
+- Doc: https://demopos.devsiamsmile.com/devops/new-agent
+- Doc (public): https://github.com/Pratchaya0/jenkin-setup/blob/win-server/doc/agent-config.md
 - Fix jenkins-agent.xml
 ```xml
 <service>
