@@ -12,7 +12,146 @@ Java 21 (Oracle):
 
 ### IIS Reverse Proxy
 - Domain name: jenkins.siamsmile.co.th
-- web.config **Paste url form Discord** **Copy form UAT**
+- https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-with-jenkins/reverse-proxy-configuration-iis/
+- web.config
+```xml
+<!-- UAT -->
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <rewrite>
+            <rules>
+                <!-- Redirect logout endpoint to auth server -->
+                <rule name="RedirectLogout" enabled="true" stopProcessing="true">
+                    <match url="^connect/endsession$" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Redirect" url="https://authlogin.uatsiamsmile.com/connect/endsession" appendQueryString="true" redirectType="Found" />
+                </rule>
+                
+                <!-- Redirect other auth endpoints to auth server -->
+                <rule name="RedirectAuthEndpoints" enabled="true" stopProcessing="true">
+                    <match url="^connect/(.+)$" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Redirect" url="https://authlogin.uatsiamsmile.com/connect/{R:1}" appendQueryString="true" redirectType="Found" />
+                </rule>
+                
+                <!-- Force HTTPS redirect -->
+                <rule name="ForceHTTPS" enabled="true" stopProcessing="true">
+                    <match url="(.*)" />
+                    <conditions>
+                        <add input="{HTTPS}" pattern="off" ignoreCase="true" />
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Redirect" url="https://jenkins.uatsiamsmile.com/{R:1}" appendQueryString="true" redirectType="Permanent" />
+                </rule>
+                
+                <!-- Redirect IP and localhost with port to domain -->
+                <rule name="RedirectToDomain" enabled="true" stopProcessing="true">
+                    <match url="(.*)" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^(localhost|147\.50\.164\.136):9090$" />
+                    </conditions>
+                    <action type="Redirect" url="https://jenkins.uatsiamsmile.com/{R:1}" appendQueryString="true" redirectType="Permanent" />
+                </rule>
+                
+                <!-- Handle OIDC login initiation -->
+                <rule name="OIDCLogin" enabled="true" stopProcessing="true">
+                    <match url="^securityRealm/commenceLogin$" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Rewrite" url="http://localhost:9090/securityRealm/commenceLogin" appendQueryString="true" />
+                    <serverVariables>
+                        <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+                        <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
+                        <set name="HTTP_X_FORWARDED_FOR" value="{REMOTE_ADDR}" />
+                        <set name="HTTP_X_FORWARDED_PORT" value="443" />
+                    </serverVariables>
+                </rule>
+                
+                <!-- Handle OIDC callback -->
+                <rule name="OIDCCallback" enabled="true" stopProcessing="true">
+                    <match url="^securityRealm/finishLogin$" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Rewrite" url="http://localhost:9090/securityRealm/finishLogin" appendQueryString="true" />
+                    <serverVariables>
+                        <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+                        <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
+                        <set name="HTTP_X_FORWARDED_FOR" value="{REMOTE_ADDR}" />
+                        <set name="HTTP_X_FORWARDED_PORT" value="443" />
+                    </serverVariables>
+                </rule>
+                
+                <!-- Handle logout -->
+                <rule name="OIDCLogout" enabled="true" stopProcessing="true">
+                    <match url="^logout$" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Rewrite" url="http://localhost:9090/logout" appendQueryString="true" />
+                    <serverVariables>
+                        <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+                        <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
+                        <set name="HTTP_X_FORWARDED_FOR" value="{REMOTE_ADDR}" />
+                        <set name="HTTP_X_FORWARDED_PORT" value="443" />
+                    </serverVariables>
+                </rule>
+
+                <!-- Add this BEFORE the ReverseProxyToJenkins rule -->
+                <rule name="GitHubWebhook" enabled="true" stopProcessing="true">
+                    <match url="^github-webhook/?(.*)" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                        <add input="{REQUEST_METHOD}" pattern="POST" />
+                    </conditions>
+                    <action type="Rewrite" url="http://localhost:9090/github-webhook/{R:1}" appendQueryString="true" />
+                    <serverVariables>
+                        <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+                        <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
+                        <set name="HTTP_X_FORWARDED_FOR" value="{REMOTE_ADDR}" />
+                        <set name="HTTP_X_FORWARDED_PORT" value="443" />
+                        <set name="HTTP_X_REAL_IP" value="{REMOTE_ADDR}" />
+                    </serverVariables>
+                </rule>
+                                
+                <!-- Main reverse proxy rule -->
+                <rule name="ReverseProxyToJenkins" enabled="true" stopProcessing="true">
+                    <match url="(.*)" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="^jenkins\.uatsiamsmile\.com$" />
+                    </conditions>
+                    <action type="Rewrite" url="http://localhost:9090/{R:1}" appendQueryString="true" />
+                    <serverVariables>
+                        <set name="HTTP_X_FORWARDED_PROTO" value="https" />
+                        <set name="HTTP_X_FORWARDED_HOST" value="{HTTP_HOST}" />
+                        <set name="HTTP_X_FORWARDED_FOR" value="{REMOTE_ADDR}" />
+                        <set name="HTTP_X_FORWARDED_PORT" value="443" />
+                    </serverVariables>
+                </rule>
+            </rules>
+        </rewrite>
+        <httpProtocol>
+            <customHeaders>
+                <add name="Canonical" value="https://jenkins.uatsiamsmile.com" />
+            </customHeaders>
+        </httpProtocol>
+        <security>
+            <requestFiltering allowDoubleEscaping="true">
+                <!-- INCREASED LIMITS FOR JWT TOKENS -->
+                <requestLimits maxQueryString="32768" 
+                      maxUrl="16384" 
+                      maxAllowedContentLength="10485760" />
+            </requestFiltering>
+        </security>
+    </system.webServer>
+</configuration>
+```
 
 ### GitHub publishes their IPs
 - https://api.github.com/meta
@@ -44,7 +183,37 @@ Java 21 (Oracle):
 - Workspace Cleanup Plugin
 
 ### Oauth 
-- **Check UAT**
+- Jenkins config.xml
+```xml
+...
+<securityRealm class="org.jenkinsci.plugins.oic.OicSecurityRealm" plugin="oic-auth@4.609.v9de140f63d01">
+    <userIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
+    <groupIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
+    <clientId> ----------- INSERT ----------------- </clientId>
+    <clientSecret>{ ---------- INSERT ---------------- }</clientSecret>
+    <userNameField>employee_code</userNameField>
+    <fullNameFieldName>employee_firstname</fullNameFieldName>
+    <groupsFieldName>role</groupsFieldName>
+    <disableSslVerification>false</disableSslVerification>
+    <logoutFromOpenidProvider>true</logoutFromOpenidProvider>
+    <postLogoutRedirectUrl>https://jenkins.uatsiamsmile.com/connect/endsession</postLogoutRedirectUrl>
+    <serverConfiguration class="org.jenkinsci.plugins.oic.OicServerWellKnownConfiguration">
+      <wellKnownOpenIDConfigurationUrl>https://authlogin.uatsiamsmile.com/.well-known/openid-configuration</wellKnownOpenIDConfigurationUrl>
+      <scopesOverride>openid profile roles email employee_profile employee_team employee_position employee_department employee_branch</scopesOverride>
+    </serverConfiguration>
+    <rootURLFromRequest>true</rootURLFromRequest>
+    <sendScopesInTokenRequest>false</sendScopesInTokenRequest>
+    <tokenExpirationCheckDisabled>false</tokenExpirationCheckDisabled>
+    <allowTokenAccessWithoutOicSession>false</allowTokenAccessWithoutOicSession>
+    <properties>
+      <org.jenkinsci.plugins.oic.properties.Pkce/>
+      <org.jenkinsci.plugins.oic.properties.AllowedTokenExpirationClockSkew>
+        <valueSeconds>0</valueSeconds>
+      </org.jenkinsci.plugins.oic.properties.AllowedTokenExpirationClockSkew>
+    </properties>
+</securityRealm>
+...
+```
 
 # Jenkins *Slave* setting
 - Doc: https://demopos.devsiamsmile.com/devops/new-agent
