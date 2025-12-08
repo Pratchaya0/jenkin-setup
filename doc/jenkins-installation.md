@@ -6,6 +6,47 @@ Updated 2025-12-07 [@Pratchaya0](https://www.github.com/Pratchaya0)
 Jenkins: 
 - https://www.jenkins.io/download/#downloading-jenkins
 - https://www.jenkins.io/doc/book/installing/windows/
+- UAT ใช้ jenkins.war
+- ถ้าใช้ .war setting jenkins.xml  
+```xml
+<!-- UAT -->
+<service>
+  <id>jenkins</id>
+  <name>Jenkins</name>
+  <description>This service runs Jenkins automation server.</description>
+  <env name="JENKINS_HOME" value="%ProgramData%\Jenkins\.jenkins"/>
+  
+  <executable>C:\Program Files\Java\zulu21.34.19-ca-jre21.0.3-win_x64\bin\java.exe</executable>
+  
+  <!-- CONSERVATIVE SETTINGS FOR 4GB RAM -->
+  <arguments>
+    -Xrs 
+    -Xms512m 
+    -Xmx2048m
+    -XX:+UseSerialGC 
+    -XX:+UseCompressedOops 
+    -XX:MetaspaceSize=256m
+    -XX:MaxMetaspaceSize=512m
+    -Djava.awt.headless=true 
+    -Dfile.encoding=UTF-8 
+    -Dhudson.lifecycle=hudson.lifecycle.WindowsServiceLifecycle 
+    -jar "D:\Program Files\Jenkins\jenkins.war" 
+    --httpPort=9090 
+    --webroot="%ProgramData%\Jenkins\war"
+  </arguments>
+  
+  <logmode>rotate</logmode>
+  <onfailure action="restart"/>
+  
+  <extensions>
+    <extension enabled="true" className="winsw.Plugins.RunawayProcessKiller.RunawayProcessKillerExtension" id="killOnStartup">
+      <pidfile>%ProgramData%\Jenkins\jenkins.pid</pidfile>
+      <stopTimeout>10000</stopTimeout>
+      <stopParentFirst>false</stopParentFirst>
+    </extension>
+  </extensions>
+</service>
+```
 
 Java 21 (Oracle):
 - https://www.oracle.com/java/technologies/downloads/#jdk21-windows
@@ -155,8 +196,6 @@ Java 21 (Oracle):
 
 ### GitHub publishes their IPs
 - https://api.github.com/meta
-
-### Fix JAVA runtime access resources
 
 # Github setting
 - Doc: https://demopos.devsiamsmile.com/devops/new-agent
